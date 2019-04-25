@@ -1,7 +1,8 @@
 package top.oitm.lambda.vavr;
 
-import io.vavr.Tuple;
-import io.vavr.Tuple2;
+import io.vavr.*;
+import io.vavr.control.Option;
+import io.vavr.control.Try;
 import org.junit.Test;
 
 /**
@@ -28,4 +29,51 @@ public class VavrTest {
     }
 
 
+    // 组合
+    @Test
+    public void testAndThen(){
+        Function3< Integer, Integer, Integer, Integer> function3 = (v1, v2, v3)
+                -> (v1 + v2) * v3;
+        System.out.println(function3.apply(1,2,3));
+
+        Function3< Integer, Integer, Integer, Integer> composed = function3.andThen(v->v*3);
+        System.out.println(composed.apply(1,1,1));
+
+
+        Function1<String, String> function1 = String::toUpperCase;
+        String apply = function1.apply("oitm");
+        System.out.println(apply);
+    }
+
+    // 部分应用
+    @Test
+    public void testUseSome(){
+        Function4<String, String,String,String,String> function4 = (s1,s2,s3,s4)->(s1+s2+s3+s4).toUpperCase();
+        Function2<String, String, String> apply = function4.apply("o", "i");
+        String apply1 = apply.apply("t", "m");
+        System.out.println(apply1);
+    }
+
+    @Test
+    public void testOption(){
+        Option<String> oitm = Option.some("OITM");
+        System.out.println(oitm.get());
+
+        Option<Object> none = Option.none();
+        System.out.println(none);
+    }
+
+
+    @Test
+    public void testTry(){
+        Try<Object> error_occur = Try.failure(new RuntimeException("error occur"));
+        Try<String> oitm_success = Try.success("Oitm Success");
+
+        Try<Integer> recover = Try.of(() -> 1 / 0).recover(e-> {
+            System.out.println(e.getMessage());
+            return 1;
+        });
+        System.out.println(recover.get());
+
+    }
 }
